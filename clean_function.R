@@ -14,20 +14,19 @@ analyze_variables <- function(trait_vec, match = TRUE) {
   new_index = 1
   toReturn <- data.frame(matrix(nrow = 0, ncol = length(names)))
   names(toReturn) <- names
-  for (i in 1:length(df)) { 
-    if (df[i, 'iid'] > df[i, 'pid']) {
-      break
-    }
-    for (trait in trait_vec) {
-      if (is.factor(df[i, trait])) {
-        toReturn[new_index, paste(trait, '0')] = as.character(df[i, trait])
-        toReturn[new_index, paste(trait, '1')] = as.character(filter(df, iid == df[i, 'pid'], pid == df[i, 'iid'])[1,trait])
-      } else {
-        toReturn[new_index, paste(trait, '0')] = df[i, trait]
-        toReturn[new_index, paste(trait, '1')] = filter(df, iid == df[i, 'pid'], pid == df[i, 'iid'])[1,trait]
+  for (i in 1:nrow(df)) { 
+    if (df[i, 'iid'] < df[i, 'pid']) {
+      for (trait in trait_vec) {
+        if (is.factor(df[i, trait])) {
+          toReturn[new_index, paste(trait, '0')] = as.character(df[i, trait])
+          toReturn[new_index, paste(trait, '1')] = as.character(filter(df, iid == df[i, 'pid'], pid == df[i, 'iid'])[1,trait])
+        } else {
+          toReturn[new_index, paste(trait, '0')] = df[i, trait]
+          toReturn[new_index, paste(trait, '1')] = filter(df, iid == df[i, 'pid'], pid == df[i, 'iid'])[1,trait]
+        }
       }
+      new_index <- new_index + 1
     }
-    new_index <- new_index + 1
   }
   return (toReturn)
 }
